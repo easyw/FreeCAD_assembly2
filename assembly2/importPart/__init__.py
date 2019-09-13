@@ -99,11 +99,14 @@ def importPart( filename, partName=None, doc_assembly=None ):
     else:
         # for Fcstd_File_Parser not all properties are implemented...
         for p in obj_to_copy.ViewObject.PropertiesList: #assuming that the user may change the appearance of parts differently depending on the assembly.
-            if hasattr(obj.ViewObject, p) and p not in ['DiffuseColor']:
-                try:
-                    setattr(obj.ViewObject, p, getattr(obj_to_copy.ViewObject, p))
-                except Exception as msg:
-                    FreeCAD.Console.PrintWarning('Unable to setattr(obj.ViewObject, %s, %s)\n' % (p, getattr(obj_to_copy.ViewObject, p) ))
+            try:
+                if hasattr(obj.ViewObject, p) and p not in ['DiffuseColor']:
+                    try:
+                        setattr(obj.ViewObject, p, getattr(obj_to_copy.ViewObject, p))
+                    except Exception as msg:
+                        FreeCAD.Console.PrintWarning('Unable to setattr(obj.ViewObject, %s, %s)\n' % (p, getattr(obj_to_copy.ViewObject, p) ))
+            except:
+                FreeCAD.Console.PrintWarning('skipping\n')
         obj.ViewObject.Proxy = ImportedPartViewProviderProxy()
     if getattr(obj,'updateColors',True) and hasattr( obj_to_copy.ViewObject, 'DiffuseColor'):
         obj.ViewObject.DiffuseColor = copy.copy( obj_to_copy.ViewObject.DiffuseColor )

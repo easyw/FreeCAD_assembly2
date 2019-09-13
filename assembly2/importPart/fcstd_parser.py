@@ -33,12 +33,12 @@ class Fcstd_File_Parser:
         z = ZipFile( fn )
         if printLevel > 0:
             print( z.namelist() )
-            print( xml_prettify( z.open('Document.xml').read() ) )
+            print( xml_prettify( z.open('Document.xml').read().decode('utf-8') ) )
             if 'GuiDocument.xml' in z.namelist():
-                print( xml_prettify( z.open('GuiDocument.xml').read() ) )
-        tree_doc = XML_Tree.fromstring(  z.open('Document.xml').read() )
+                print( xml_prettify( z.open('GuiDocument.xml').read().decode('utf-8') ) )
+        tree_doc = XML_Tree.fromstring(  z.open('Document.xml').read().decode('utf-8') )
         if 'GuiDocument.xml' in z.namelist():
-            tree_gui = XML_Tree.fromstring(  z.open('GuiDocument.xml').read() )
+            tree_gui = XML_Tree.fromstring(  z.open('GuiDocument.xml').read().decode('utf-8') )
         else:
             tree_gui = None
         #tree_shapes =  ElementTree.fromstring(  z.open('PartShape.brp').read() )
@@ -53,7 +53,7 @@ class Fcstd_File_Parser:
             assert not k in self.Objects
             obj = Fcstd_Property_List( o.find('Properties') )
             obj.Name = k
-            obj.Content = XML_Tree.tostring( o )
+            obj.Content = str(XML_Tree.tostring( o ))
             self.Objects_dict[k] = obj
             self.Objects.append( self.Objects_dict[k] )
         #viewObjects
@@ -76,7 +76,7 @@ class Fcstd_File_Parser:
                 delattr( obj, 'Shape' )
                 if not only_load_visible_shapes or obj.ViewObject.Visibility:
                     obj.Shape = Part.Shape()
-                    obj.Shape.importBrepFromString( z.open( shape_zip_name ).read() )
+                    obj.Shape.importBrepFromString( z.open( shape_zip_name ).read().decode('utf-8') )
         #colour lists
         for obj in self.Objects:
             if hasattr( obj, 'ViewObject' ):
